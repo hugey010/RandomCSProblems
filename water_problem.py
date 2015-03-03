@@ -2,12 +2,14 @@
 # Author: Tyler Hugenberg
 # how do you pythong?
 
+import sys
+
 
 def list_max(hist):
   return reduce((lambda x, y: max(x, y)), hist, hist[0])
 
 # assume list is 2 or longer
-def list_two_maxes(hist):
+def list_two_unique_maxes(hist):
   m1 = max(hist[0], hist[1])
   m2 = min(hist[0], hist[1])
 
@@ -20,7 +22,7 @@ def list_two_maxes(hist):
   return m1, m2
 
 # assume list is 2 or longer
-def list_two_maxes_indices(hist):
+def list_two_unique_max_indices(hist):
   i1 = 0
   i2 = 1
   m1 = hist[i1]
@@ -37,88 +39,50 @@ def list_two_maxes_indices(hist):
           m2, m1 = m1, m2
           i1, i2 = i2, i1
 
-  return i1, i2
+  minIndex = min(i1, i2)
+  maxIndex = max(i1, i2)
+  return minIndex, maxIndex
 
 def list_min(hist):
   return reduce((lambda x, y: min(x, y)), hist, hist[0])
 
+# perfect if ends are relative maximums
 def list_perfect_valley(hist):
-  previous = hist[1]
-  descending = False
-  if previous > hist[0]:
-    descending = True
-    
-  timesSwitched = 0
-  for i in range(2, len(hist)):
-    value = hist[i]
-    if value > previous:
-      if descending == True:
-        timesSwitched = timesSwitched + 1
-      descending = False
 
-    if value < previous:
-      if descending == False:
-        timesSwitched = timesSwitched + 1
-      descending = True
+  m1, m2 = list_two_unique_max_indices(hist)
 
-    previous = value
-
-    return timesSwitched < 2
+  if (m1 == 0 and m2 == len(hist)-1) or (m2 == 0 and m1 == len(hist)-1):
+    return True
+  return False
 
 def volume_to_second_tallest(hist):
+
+  max1, max2 = list_two_unique_maxes(hist)
+  maxIndex1, maxIndex2 = list_two_unique_max_indices(hist)
+
   volume = 0
-
-  #print "list for second to tallest = ", hist
-
-  max1, max2 = list_two_maxes(hist)
-  maxIndex1, maxIndex2 = list_two_maxes_indices(hist)
-
-  lowerIndex = min(maxIndex1, maxIndex2)
-  higherIndex = max(maxIndex1, maxIndex2)
-
-  for i in range(lowerIndex+1, higherIndex):
+  for i in range(maxIndex1+1, maxIndex2):
     value = hist[i]
-    #print "vol = max2: ", max2, " - value: ", value
     volume = volume + max2 - value
 
   return volume
 
 def determine_volume(hist):
-  print "determine_volume hist: ", hist
-
   if len(hist) <= 2:
     return 0
-  elif len(hist) == 3:
-    # bowl shape?
-    middle = hist[1]
-    if middle < hist[0] and middle < hist[2]:
-      m1, m2 = list_two_maxes(hist)
-      return m2 - middle
-    else:
-      return 0
-    
-  elif len(hist) > 3:
-    # find max and divide / conquer
-    maxIndex1, maxIndex2 = list_two_maxes_indices(hist)
-
+  else:
     # if bounds of list are the max indices, just calculate.
-    if list_perfect_valley:
+    if list_perfect_valley(hist):
       return volume_to_second_tallest(hist)
-    else: # otherwise divide
-      tallest = list_max(hist)
-      tallestIndex = hist.index(tallest)
 
-      startList = hist[:tallestIndex + 1]
-      if startList == hist:
-        startList = hist[:tallestIndex]
+    else: # find max and divide / conquer
+      maxIndex1, maxIndex2 = list_two_unique_max_indices(hist)
 
-      endList = hist[tallestIndex - 1:]
-      if endList == hist:
-        endList = hist[tallestIndex:]
+      startList = hist[0:maxIndex1]
+      middleList = hist[maxIndex1:maxIndex2+1]
+      endList = hist[maxIndex2: len(hist)]
 
-      #print "startlist: ", startList
-      #print "endList: ", endList
-      return determine_volume(startList) + determine_volume(endList)
+      return determine_volume(startList) + determine_volume(middleList)  + determine_volume(endList)
 
 def test_pyramid():
   histo = [1, 2, 3, 4, 5, 6, 7, 6, 5, 4, 3, 2]
@@ -156,9 +120,9 @@ def test_updown():
   print "Calculated Water Volume: = ", determine_volume(histo)
 
 
-#test_pyramid()
-#test_inverse_pyramid()
-#test_something()
+test_pyramid()
+test_inverse_pyramid()
+test_something()
 test_negatives()
-#test_updown()
+test_updown()
 
