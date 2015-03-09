@@ -76,7 +76,7 @@ def volume(hist):
     else: # divide & conquer
       maxIndex1, maxIndex2 = list_two_unique_max_indices(hist)
 
-      startList = hist[0:maxIndex1]
+      startList = hist[0:maxIndex1+1]
       middleList = hist[maxIndex1:maxIndex2+1]
       endList = hist[maxIndex2: len(hist)]
 
@@ -167,15 +167,12 @@ def test_base():
   assert shouldbe == volume(histo)
   print "For histogram: ", histo, "Actual Volume: ", shouldbe, "Calculated: ", volume(histo)
 
-
-
-
 def test_1():
   histo = [5, 5, 1, 7, 1, 1, 5, 2, 7, 6]
   shouldbe = 23
 
   print "List: ", histo, " shouldbe: ", shouldbe
-  print "Calculated Water Volume: = ", determine_volume(histo)
+  print "Calculated Water Volume: = ", volume(histo)
 
 test_pyramid()
 test_inverse_pyramid()
@@ -185,5 +182,3 @@ test_updown()
 test_base()
 test_holes()
 test_1()
-
-print "All Tests Passed"
