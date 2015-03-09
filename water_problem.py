@@ -170,6 +170,12 @@ def test_base():
 
 
 
+def test_1():
+  histo = [5, 5, 1, 7, 1, 1, 5, 2, 7, 6]
+  shouldbe = 23
+
+  print "List: ", histo, " shouldbe: ", shouldbe
+  print "Calculated Water Volume: = ", determine_volume(histo)
 
 test_pyramid()
 test_inverse_pyramid()
@@ -178,5 +184,6 @@ test_negatives()
 test_updown()
 test_base()
 test_holes()
+test_1()
 
 print "All Tests Passed"
